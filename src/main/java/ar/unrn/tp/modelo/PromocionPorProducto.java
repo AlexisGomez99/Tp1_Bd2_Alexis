@@ -17,8 +17,7 @@ public class PromocionPorProducto  {
         this.marca = marca;
     }
 
-    public double aplicarDescuento(CarritoDeCompra carrito) {
-        List<Producto> productos = carrito.obtenerListaProductos();
+    public double aplicarDescuento(List<Producto> productos) {
         Date hoy= new Date();
         double total=0;
         for (Producto prod : productos){
