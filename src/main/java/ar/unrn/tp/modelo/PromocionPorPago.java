@@ -3,33 +3,32 @@ package ar.unrn.tp.modelo;
 import java.util.Date;
 import java.util.List;
 
-public class PromocionPorPago implements Promocion {
-    private Promocion orden;
+public class PromocionPorPago {
+
     private Date fechaInicio;
     private Date fechaFin;
-    private Marca marca;
-    private double descuento;
 
-    public PromocionPorPago( Date fechaInicio, Date fechaFin, Marca marca, int descuento) {
-        this.orden = orden;
+    private TarjetaDeCredito tarjeta;
+    private double descuento = 0.08;
+
+    public PromocionPorPago(Date fechaInicio, Date fechaFin, TarjetaDeCredito tarjeta) {
         this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
-        this.marca = marca;
-        this.descuento = descuento;
+        this.tarjeta = tarjeta;
     }
 
-    @Override
-    public double devolverPrecio(CarritoDeCompra carrito) {
-        List<Producto> productos = carrito.devolverProductos();
+    public double aplicarDescuento(double totalN, TarjetaDeCredito tarjeta) {
+        Date hoy= new Date();
+        double total = totalN;
+        if(tarjeta!=null) {
 
-        double total=0;
-        for (Producto prod : productos){
-            if(carrito.fechaVenta().before(this.fechaFin) && carrito.fechaVenta().after(this.fechaInicio) && prod.getMarca().equals(this.marca)){
-                total += total + prod.getPrecio() * this.descuento;
-            }
-            else {
-                total += total + prod.getPrecio();
-            }
+                if (hoy.before(this.fechaFin) && hoy.after(this.fechaInicio) && this.tarjeta.equals(tarjeta)){
+                    total = total - (total * this.descuento);
+                }
+
+        }
+        else {
+            System.out.println("necesita vincular una tarjeta/cliente para aplicar este descuento.");
         }
         return total;
     }
