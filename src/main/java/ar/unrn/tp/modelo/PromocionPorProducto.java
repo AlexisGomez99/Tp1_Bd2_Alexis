@@ -3,29 +3,32 @@ package ar.unrn.tp.modelo;
 import java.util.Date;
 import java.util.List;
 
-public class PromocionPorProducto  {
-
-    private Date fechaInicio;
-    private Date fechaFin;
-
+public class PromocionPorProducto extends Promocion{
     private Marca marca;
-    private double descuento = 0.05;
 
-    public PromocionPorProducto(Date fechaInicio, Date fechaFin, Marca marca) {
-        this.fechaInicio = fechaInicio;
-        this.fechaFin = fechaFin;
+    public PromocionPorProducto(Date fechaInicio, Date fechaFin, Marca marca, double descuento) {
+        super(fechaInicio,fechaFin,descuento);
         this.marca = marca;
+
     }
 
-    public double aplicarDescuento(List<Producto> productos) {
+    @Override
+    public double aplicarDescuento(List<Producto> productos,String tarjeta) {
         Date hoy= new Date();
         double total=0;
         for (Producto prod : productos){
+
             if(hoy.before(this.fechaFin) && hoy.after(this.fechaInicio) && prod.getMarca().equals(this.marca)){
-                total += total + (prod.getPrecio() - prod.getPrecio() * this.descuento);
+                total = total + (prod.getPrecio() * this.descuento);
             }
-            else {
-                total += total + prod.getPrecio();
+        }
+        return total;
+    }
+    public double getTotal(List<Producto> productos) {
+        double total = 0;
+        if(productos != null) {
+            for (Producto prod : productos) {
+                total = total + prod.getPrecio();
             }
         }
         return total;

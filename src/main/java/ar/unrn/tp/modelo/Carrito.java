@@ -1,20 +1,21 @@
 package ar.unrn.tp.modelo;
 
+import ar.unrn.tp.exception.NotNullException;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class Carrito {
-    private PromocionPorPago porPago;
-    private PromocionPorProducto porProducto;
+    private List<Promocion> promocions = new ArrayList<>();
     private List<Producto> productoList = new ArrayList<Producto>();
     private Cliente cliente;
     private TarjetaDeCredito tarjeta;
-    public Carrito(Date fechaInicioPago, Date fechaFinPago, TarjetaDeCredito tarjetaPago,
-                   Date fechaInicioProd, Date fechaFinProd, Marca marcaProd) {
-        this.porPago = new PromocionPorPago(fechaInicioPago,fechaFinPago,tarjetaPago);
-        this.porProducto = new PromocionPorProducto(fechaInicioProd, fechaFinProd, marcaProd);
+    public Carrito( List<Promocion> listPromociones) {
+        this.promocions = listPromociones;
     }
+
+
     public void asociarCliente(Cliente cliente){
         this.cliente= cliente;
     }
@@ -24,19 +25,38 @@ public class Carrito {
     public void agregarProducto(Producto prod){
         productoList.add(prod);
     }
-    public void calcularDescuento(){
-         System.out.println("Precio con descuentos = "+ this.aplicarDescuento());
+
+
+
+
+    public double calcularDescuento() throws NotNullException {
+        return this.totalSinDescuento()- this.aplicarDescuento();
     }
 
-    private double aplicarDescuento(){
-        double total = this.porProducto.aplicarDescuento(this.productoList);
-        total = this.porPago.aplicarDescuento(total,this.tarjeta);
+    private double aplicarDescuento() throws NotNullException {
+        if (tarjeta == null)
+            throw new NotNullException("Tarjeta");
+        double total= 0;
+        for (Promocion prom : this.promocions){
+            total = total + prom.aplicarDescuento(this.productoList,this.tarjeta.getNombre());
+        }
         return total;
     }
 
-    public OrdenDePago comprarListado(){
+    public Venta comprarListado() throws NotNullException {
         double total= this.aplicarDescuento();
-        OrdenDePago venta= new OrdenDePago(new Date(), this.cliente,this.productoList,total);
+        tarjeta.descontar(this.calcularDescuento());
+        Venta venta= new Venta(new Date(), this.cliente,this.productoList,total);
         return venta;
+    }
+
+    public double totalSinDescuento() {
+        double total = 0;
+        if(this.productoList != null) {
+            for (Producto prod : this.productoList) {
+                total = total + prod.getPrecio();
+            }
+        }
+        return total;
     }
 }

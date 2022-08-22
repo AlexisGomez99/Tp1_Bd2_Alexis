@@ -14,5 +14,20 @@ public class TarjetaDeCredito {
         this.numero = numero;
         this.fondos = fondos;
     }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void agregar(double monto){
+        this.fondos=this.fondos+monto;
+    }
+    public void descontar(double monto){
+        this.fondos=this.fondos-monto;
+    }
+
+    public double getTotal(){
+        return this.fondos;
+    }
 }
 
